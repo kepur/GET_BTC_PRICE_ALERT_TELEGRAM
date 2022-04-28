@@ -16,7 +16,7 @@ file_not_exist = '''
 alert_config.ini does not exist
 '''
 example = '''[TELEGRAM]
-telegram_token = *********************
+telegram_token = 
 chat_id = -1001799067710
 '''
 def get_btc_price():
@@ -83,7 +83,8 @@ def telegram_bot(token,chat_id):
                         # 告警次数
                         send_times = 3
                         current_price = int(get_btc_price())
-                        print("BTC CURRENT PRICE:{}".format(current_price))
+                        print("BTC CURRENT PRICE IS:{}".format(current_price))
+                        print("MONITOR ID IS:{}".format(monitor_id))
                         if current_price >= 41000:
                             while current_price >= 41000:
                                 while send_times > 0:
@@ -154,6 +155,7 @@ if __name__ == "__main__":
                 TELEGRAM_TOKEN = configini.get('TELEGRAM', 'TELEGRAM_TOKEN')
                 CHAT_ID = configini.get('TELEGRAM', 'CHAT_ID')
                 telegram_bot(TELEGRAM_TOKEN,chat_id=CHAT_ID)
+                print("success got config parameter")
             else:
                 with open(current_path + "/" + "error.log", mode='w+', encoding="utf8") as output_error:
                     output_error.write(file_not_exist)
