@@ -16,7 +16,7 @@ file_not_exist = '''
 alert_config.ini does not exist
 '''
 example = '''[TELEGRAM]
-telegram_token = 
+telegram_token = 5255gCpopE
 chat_id = -1001799067710
 '''
 def get_btc_price():
@@ -50,12 +50,49 @@ monitor_id = 0
 
 def telegram_bot(token,chat_id):
     bot = telebot.TeleBot(token)
+    from telebot import types
+    keyboard=types.InlineKeyboardMarkup()
+    btn_help = types.InlineKeyboardButton('Help',callback_data='help')
+    btn_price = types.InlineKeyboardButton('Get Price',callback_data="price")
+    btn_start= types.InlineKeyboardButton('Start Monitor',callback_data="start")
+    keyboard.row(btn_price,btn_help)
+    keyboard.row(btn_start)
+    bot.send_message(chat_id,"比特币价格监控",reply_markup=keyboard)
+
     @bot.message_handler(commands=["help"])
     def help_message(message):
-        bot.send_message(chat_id, "type /price GET BTC PRICE NOW!\n")
+        bot.send_message(chat_id, "type /price GET BTC PRICE NOW!"
+                                  "type /start START BTP LOWER PRICE MONITOR \n",reply_markup=keyboard)
     # @bot.message_handler(content_types=["text"])
     # def send_text(message):
     #     if message.text == "price":
+    # @bot.inline_handler(lambda query: len(query.query) > 0)
+    # def query_text(query):
+    #     kb = types.InlineKeyboardMarkup()
+    #     kb.add(types.InlineKeyboardButton(text="Help me!", callback_data="start"))
+    #     results = []
+    #     single_msg = types.InlineQueryResultArticle(
+    #         id="1", title="Press me",
+    #         input_message_content=types.InputTextMessageContent(message_text="Welcome I am helper bot!"),
+    #         reply_markup=kb
+    #     )
+    #     results.append(single_msg)
+    #     bot.answer_inline_query(query.id, results)
+
+    @bot.callback_query_handler(func=lambda call: True)
+    def callback_inline(call):
+        if call.message:
+            if call.data == "start":
+                monitor()
+            if call.data == "price":
+                sell_price = get_btc_price()
+                bot.send_message(
+                    chat_id,
+                    f"{datetime.now().strftime('%Y-%m-%d %H:%M')}\nBTC price: {sell_price}\n",)
+            if call.data == "help":
+                bot.send_message(chat_id, f"type /price GET BTC PRICE NOW!\n"
+                f"type /start START BTP LOWER PRICE MONITOR",keyboard)
+
     @bot.message_handler(commands=["price"])
     def get_price_message(message):
         try:
@@ -72,7 +109,70 @@ def telegram_bot(token,chat_id):
             )
 
     @bot.message_handler(commands=['monitor'])
-    def monitor(message):
+    def monitor2(message):
+        global monitor_id
+        try:
+            if monitor_id == 0:
+                bot.send_message(chat_id, "Alert beging start")
+                while True:
+                    sleptime = random.randint(30, 90)
+                    try:
+                        # 告警次数
+                        send_times = 3
+                        current_price = int(get_btc_price())
+                        print("BTC CURRENT PRICE IS:{}".format(current_price))
+                        print("MONITOR ID IS:{}".format(monitor_id))
+                        if current_price >= 41000:
+                            while current_price >= 41000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "BTC!!! PRICE IS:{} U HAVE TO SELL SOME LIKE %30".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        elif current_price >= 42000:
+                            while current_price >= 42000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "BTC!!! PRICE IS:{} U HAVE TO SELL SOME LIKE %40".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        elif current_price <= 38000:
+                            while current_price <= 38000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "!!! NOW BTC PRICE IS:{} U HVAE TO BUY ARROUND 25% ".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        elif current_price <= 35000:
+                            while current_price <= 35000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "!!! NOW BTC PRICE IS:{} U HVAE TO BUY ARROUND 50% ".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        monitor_id = 1
+                    except Exception as E:
+                        bot.send_message(chat_id, "Oops... Something was wrong!!!{}".format(E))
+                    time.sleep(sleptime)
+            else:
+                bot.send_message(chat_id, "Alert already started")
+                print("程序已经启动......")
+        except Exception as ex:
+            print(ex)
+            bot.send_message(
+                chat_id,
+                "Oops... Something was wrong!!!\n{}".format(ex)
+            )
+
+    def monitor():
         global monitor_id
         try:
             if monitor_id == 0:
@@ -161,7 +261,7 @@ if __name__ == "__main__":
                     output_error.write(file_not_exist)
                 with open(current_path + "/" + "config.ini", mode='w+', encoding="utf8") as output_error:
                     output_error.write(example)
-        except:
-            pass
+        except Exception as E:
+            print("Error :{}".format(E))
     except :
-        pass
+        print("wrong 1")
