@@ -16,7 +16,7 @@ file_not_exist = '''
 alert_config.ini does not exist
 '''
 example = '''[TELEGRAM]
-telegram_token = 5255331277:AA-O5gCpopE
+telegram_token = 52553312
 chat_id = -1001799067710
 '''
 def get_btc_price():
@@ -88,10 +88,10 @@ def telegram_bot(token,chat_id):
                 sell_price = get_btc_price()
                 bot.send_message(
                     chat_id,
-                    f"{datetime.now().strftime('%Y-%m-%d %H:%M')}\nBTC price :$ {sell_price}\n",)
+                    f"{datetime.now().strftime('%Y-%m-%d %H:%M')}\nBTC price :${sell_price}\n",)
             if call.data == "help":
                 bot.send_message(chat_id, f"type /price GET BTC PRICE NOW!\n"
-                f"type /start START BTP LOWER PRICE MONITOR",reply_markup=keyboard)
+                f"type /monitor START BTP LOWER PRICE MONITOR",reply_markup=keyboard)
 
     @bot.message_handler(commands=["price"])
     def get_price_message(message):
@@ -226,7 +226,7 @@ def telegram_bot(token,chat_id):
                         bot.send_message(chat_id, "Oops... Something was wrong!!!{}".format(E))
                     time.sleep(sleptime)
             else:
-                bot.send_message(chat_id, "Alert already started")
+                bot.send_message(chat_id, "Alert already started Type /help Get Help")
                 print("程序已经启动......")
         except Exception as ex:
             print(ex)
