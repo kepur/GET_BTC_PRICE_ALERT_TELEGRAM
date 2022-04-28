@@ -3,19 +3,20 @@ import requests
 import random
 from bs4 import BeautifulSoup
 import telebot
+
 '''
 pip install -r requirement.txt
 pip install pyTelegramBotAPI
 pip install requests
 pip install BeautifulSoup4
-
+pyinstaller.exe -F -i ..\..\lgon.ico ..\..\btc-alert.py --noconsole
 '''
 file_not_exist = '''
 #!!!!Please create config.ini file put current directory and config 
 alert_config.ini does not exist
 '''
 example = '''[TELEGRAM]
-telegram_token = 
+telegram_token = 5255331277:AAHF-gukbtGRthSqv-JGSzoDRxpO5gCpopE
 chat_id = -1001799067710
 '''
 def get_btc_price():
@@ -45,58 +46,13 @@ def get_btc_price():
 
 from datetime import datetime
 
+monitor_id = 0
+
 def telegram_bot(token,chat_id):
     bot = telebot.TeleBot(token)
     @bot.message_handler(commands=["help"])
     def help_message(message):
-        bot.send_message(message.chat.id, "type /price GET BTC PRICE NOW!\n"
-                                          "type /start MONITOR LOWER PRICE")
-
-    @bot.message_handler(commands=["start"])
-    def start_message(message):
-        bot.send_message(chat_id, "type /price' get of BTC now!\n"
-                                          "Alert beging started")
-        while True:
-            try:
-                sleptime=random.randint(30,90)
-                #告警次数
-                send_times=3
-                current_price=int(get_btc_price())
-                print("BTC CURRENT PRICE:{}".format(current_price))
-                if current_price >=41000:
-                    while current_price >=41000:
-                        while send_times>0:
-                            bot.send_message(chat_id, "BTC!!! PRICE IS:{} U HAVE TO SELL SOME LIKE %30".format(current_price))
-                            send_times-=1
-                            current_price = int(get_btc_price())
-                            time.sleep(sleptime)
-                elif current_price>=42000:
-                    while current_price >=42000:
-                        while send_times > 0:
-                            bot.send_message(chat_id, "BTC!!! PRICE IS:{} U HAVE TO SELL SOME LIKE %40".format(current_price))
-                            send_times-=1
-                            current_price = int(get_btc_price())
-                            time.sleep(sleptime)
-                elif current_price<=38000:
-                    while current_price <= 38000:
-                        while send_times > 0:
-                            bot.send_message(chat_id,"!!! NOW BTC PRICE IS:{} U HVAE TO BUY ARROUND 25% ".format(current_price))
-                            send_times -= 1
-                            current_price = int(get_btc_price())
-                            time.sleep(sleptime)
-                elif current_price<=35000:
-                    while current_price <=35000:
-                        while send_times > 0:
-                            bot.send_message(chat_id,"!!! NOW BTC PRICE IS:{} U HVAE TO BUY ARROUND 50% ".format(current_price))
-                            send_times -= 1
-                            current_price = int(get_btc_price())
-                            time.sleep(sleptime)
-
-            except Exception as E:
-                bot.send_message(chat_id, "Oops... Something was wrong!!!{}".format(E))
-            time.sleep(sleptime)
-
-
+        bot.send_message(chat_id, "type /price GET BTC PRICE NOW!\n")
     # @bot.message_handler(content_types=["text"])
     # def send_text(message):
     #     if message.text == "price":
@@ -114,6 +70,70 @@ def telegram_bot(token,chat_id):
                 chat_id,
                 "Oops... Something was wrong!!!\n{}".format(ex)
             )
+
+    @bot.message_handler(commands=['monitor'])
+    def monitor(message):
+        global monitor_id
+        try:
+            if monitor_id == 0:
+                bot.send_message(chat_id, "Alert beging start")
+                while True:
+                    sleptime = random.randint(30, 90)
+                    try:
+                        # 告警次数
+                        send_times = 3
+                        current_price = int(get_btc_price())
+                        print("BTC CURRENT PRICE:{}".format(current_price))
+                        if current_price >= 41000:
+                            while current_price >= 41000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "BTC!!! PRICE IS:{} U HAVE TO SELL SOME LIKE %30".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        elif current_price >= 42000:
+                            while current_price >= 42000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "BTC!!! PRICE IS:{} U HAVE TO SELL SOME LIKE %40".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        elif current_price <= 38000:
+                            while current_price <= 38000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "!!! NOW BTC PRICE IS:{} U HVAE TO BUY ARROUND 25% ".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        elif current_price <= 35000:
+                            while current_price <= 35000:
+                                while send_times > 0:
+                                    bot.send_message(chat_id,
+                                                     "!!! NOW BTC PRICE IS:{} U HVAE TO BUY ARROUND 50% ".format(
+                                                         current_price))
+                                    send_times -= 1
+                                    current_price = int(get_btc_price())
+                                    time.sleep(sleptime)
+                        monitor_id = 1
+                    except Exception as E:
+                        bot.send_message(chat_id, "Oops... Something was wrong!!!{}".format(E))
+                    time.sleep(sleptime)
+            else:
+                bot.send_message(chat_id, "Alert already started")
+                print("程序已经启动......")
+        except Exception as ex:
+            print(ex)
+            bot.send_message(
+                chat_id,
+                "Oops... Something was wrong!!!\n{}".format(ex)
+            )
+
     bot.polling()
 
 
