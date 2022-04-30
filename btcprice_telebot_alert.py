@@ -140,8 +140,8 @@ def telegram_bot(token,chat_id):
                                     send_times -= 1
                                     current_price = int(get_btc_price())
                                     time.sleep(sleptime)
-                        elif current_price <= 38000:
-                            while current_price <= 38000:
+                        elif current_price <= 38200:
+                            while current_price <= 38200:
                                 while send_times > 0:
                                     bot.send_message(chat_id,
                                                      "!!! NOW BTC PRICE IS :${} U HVAE TO BUY ARROUND 25% ".format(
