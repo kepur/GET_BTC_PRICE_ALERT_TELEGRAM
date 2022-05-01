@@ -16,8 +16,8 @@ file_not_exist = '''
 alert_config.ini does not exist
 '''
 example = '''[TELEGRAM]
-telegram_token = 525533
-chat_id = -100179906771
+telegram_token = 525533127
+chat_id = -100179906770
 '''
 def get_btc_price():
     try:
