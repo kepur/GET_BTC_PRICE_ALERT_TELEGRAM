@@ -16,8 +16,8 @@ file_not_exist = '''
 alert_config.ini does not exist
 '''
 example = '''[TELEGRAM]
-telegram_token = 52553312
-chat_id = -1001799067710
+telegram_token = 525533
+chat_id = -100179906771
 '''
 def get_btc_price():
     try:
@@ -140,8 +140,8 @@ def telegram_bot(token,chat_id):
                                     send_times -= 1
                                     current_price = int(get_btc_price())
                                     time.sleep(sleptime)
-                        elif current_price <= 38200:
-                            while current_price <= 38200:
+                        elif current_price <= 38000:
+                            while current_price <= 38000:
                                 while send_times > 0:
                                     bot.send_message(chat_id,
                                                      "!!! NOW BTC PRICE IS :${} U HVAE TO BUY ARROUND 25% ".format(
@@ -194,6 +194,7 @@ def telegram_bot(token,chat_id):
                                     send_times -= 1
                                     current_price = int(get_btc_price())
                                     time.sleep(sleptime)
+                                send_times = 3
                         elif current_price >= 42000:
                             while current_price >= 42000:
                                 while send_times > 0:
@@ -203,6 +204,7 @@ def telegram_bot(token,chat_id):
                                     send_times -= 1
                                     current_price = int(get_btc_price())
                                     time.sleep(sleptime)
+                                send_times = 3
                         elif current_price <= 38000:
                             while current_price <= 38000:
                                 while send_times > 0:
@@ -212,6 +214,7 @@ def telegram_bot(token,chat_id):
                                     send_times -= 1
                                     current_price = int(get_btc_price())
                                     time.sleep(sleptime)
+                                send_times = 3
                         elif current_price <= 35000:
                             while current_price <= 35000:
                                 while send_times > 0:
@@ -221,6 +224,7 @@ def telegram_bot(token,chat_id):
                                     send_times -= 1
                                     current_price = int(get_btc_price())
                                     time.sleep(sleptime)
+                                send_times = 3
                         monitor_id = 1
                     except Exception as E:
                         bot.send_message(chat_id, "Oops... Something was wrong!!!{}".format(E))
@@ -243,10 +247,19 @@ if __name__ == "__main__":
     from configparser import RawConfigParser
     import os
     try:
-        #windows path
-        current_config = r'{}'.format(str(os.getcwd() + "\\config.ini"))
-        #linux path
-        #current_config = r'{}'.format(str(os.getcwd() + "\/alert_config.ini"))
+        import platform
+        if platform.system().lower() == "windows":
+            # windows path
+            current_config = r'{}'.format(str(os.getcwd() + "\\config.ini"))
+            print("当前环境为Windows系统")
+        elif platform.system().lower() == 'linux':
+            # linux path
+            print("当前环境为linux系统")
+            current_config = r'{}'.format(str(os.getcwd() + "//config.ini"))
+        else:
+            # 默认windows
+            print("无法获取当前环境")
+            current_config = r'{}'.format(str(os.getcwd() + "\\config.ini"))
         current_path = r'{}'.format(str(os.getcwd()))
         try:
             if os.path.exists(current_config):
